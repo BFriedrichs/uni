@@ -1,0 +1,17 @@
+
+Looking at the structure of the cube we need 3 "depth" with 2 rows that hold 4 columns.
+If we look at the addresses in the code we can see that every matrix of depth has a length of 32 bytes.
+Every row has a length of 16 bytes and into every row fit 4 columns with the size of 4 bytes.
+
+                                          CUBE1 EXAMPLE
+
+                32                             32                              32
+|-------------------------------|-------------------------------|-------------------------------|
+
+       16              16              16              16               16             16
+|---------------|---------------|---------------|---------------|---------------|---------------|
+
+  4   4   4   4   4   4   4   4   4   4   4   4   4   4   4   4   4   4   4   4   4   4   4   4
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+
+{{1   2   3   4 }              }{{2   3        }{ 4   6   8  10}}{{3  4   5   6 }{6   8  10     }}

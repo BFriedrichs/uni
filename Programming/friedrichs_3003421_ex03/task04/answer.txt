@@ -1,0 +1,33 @@
+I started off looking for a explanation of the topic because we actually haven't covered it in the lecture yet.
+
+After somewhat understanding the stack I started working on a solution.
+
+First of all I knew that the return address had to be somewhere above my local variables on my stack so I just started digging up to see which addresses I would find.
+From there I inspected the program in gdb, I checked where the line "i = 0;" lies on the stack, because that's where "modify()" would ultimatively would jump back to.
+Looking back at the tests I did before "xPtr + 5" was the same address. (xPtr + 1 to xPtr + 4 being other local vars and pointers)
+
+What I thought I could do from here is just incrementing the pointer by 4 and that's it.
+Which obviously didn't work because I didn't account for instructions having variable lengths.
+So I found out you could use "layout asm" in gdb to get a closer look at the programs structure and there it was:
+
+   │0x40056b <main+8>               movl   $0x2a,-0x4(%rbp)         │
+   │0x400572 <main+15>              callq  0x400536 <modify>        │
+   │0x400577 <main+20>              movl   $0x0,-0x4(%rbp)          │
+   │0x40057e <main+27>              mov    -0x4(%rbp),%eax          |
+
+   1: Write 42 to -4(%rbp) at main offset + 8
+   2: Call modify at main offset + 15
+   3: Write 0 to -4(%rbp) at main offset + 20
+   4: Read "i" from -4(%rbp) at main offset + 27
+
+Since I already knew my pointer was located at "xPtr + 5" all I had to do was increase that pointer by 7 so it would jump right over the assignment of 0 to i.
+
+
+==================================
+
+Changing stack size on
+  - Linux:
+    Issuing the command "ulimit -S -s <desired_byte_size>" will change the default stack size on the system.
+
+  - Windows:
+    Calling the gcc compiler with the "--stack <desired_byte_size>" flag  
