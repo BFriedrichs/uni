@@ -1,0 +1,6 @@
+I would have expected the value of globalvar to be 1, because I didn't think scope2.c would affect the output.
+
+Instead the output is "globalvar = 1073741824" which happens because globalvar is redeclared globally as a float.
+Since printf is expecting an integer as indicated by "%d" but we're parsing a float now our output is obviously wrong.
+
+It is possible to get a warning about this by using the "-Wl,--warn-common" parameter while compiling using gcc.

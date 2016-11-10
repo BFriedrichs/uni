@@ -1,0 +1,6 @@
+The problem using scanf is that you wouldnt be able to check for a single input like "0" because it always waits for all expected inputs before parsing.
+This means we have to create our own parser, also one annoyance of scanf is that when reading a char it keeps the "Enter" character in the input buffer.
+
+fgets and sscanf are circumventing these problems, fgets takes a single input stream (stdin in this case).
+After that it's easy to parse and check for errors using sscanf.
+

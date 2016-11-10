@@ -1,0 +1,19 @@
+
+1:
+  int (*x[])(int, int)
+
+  - "x is an array of pointers to a function expecting (int, int) returning int"
+
+2:
+  int *(*x(int*))()
+
+  - "x is a function expecting (int *) returning a pointer to a function returning an int pointer"
+
+3:
+  int *(*(*x())[])(int)
+
+  - "x is a function returning a pointer to an array of pointers to functions expecting an int returning an int pointer"
+4:
+  int (*x)(int *(*)(int))
+
+  - "x is a pointer to a function expecting a pointer to a function expecting an int and returns an int pointer returning int"
