@@ -1,0 +1,8 @@
+ *  The macro function is not typesafe and can't be overloaded with different types. (it would be possible to overload it with multiple parameters though)
+
+ *  The commented line does not compile because we didn't specify a method that accepts int and double so since we're calling it with both parameters
+    it is unclear which method should be called.
+
+ *  maxf1: int -> a and b are integers so the maxf int function gets called
+    maxf2: double -> since 0.1 and 0.2 is added to a and b respectively they are converted to floating point numbers and the double function is called
+    maxf3: int -> b++ keeps the int datatype so the int function is called

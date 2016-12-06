@@ -1,0 +1,25 @@
+ *  The output is "top = 1, bottom = 42"
+ *  The error stems from the array overflow that happens when "s.arr[5] = 42;" is set in the loop because s.arr[5] is the same pointer as s.bottom
+
+ *  Using gdb you can even see how the pointers overlap.
+    We want to find the point where s.bottom is overwritten.
+
+    First of all we check if s.bottom is set correctly. For that we use a breakpoint after it is set and run the program and print s.bottom
+    gdb command =>  break 13
+                    run
+                    print s.bottom
+
+    Output: $1 = 2, s.bottom is definitely set to 2.
+    So now we know the fault definitely lies later than that. We set a watch on our s.bottom variable so whenever it is written to we get a temporary breakpoint
+    gdb command =>  watch s.bottom
+                    continue
+
+    The program stops, s.bottom got assigned the new value of 42.
+    Using the list command we can see the the immediate source code that is at the spot where it got written.
+    We see that 42 gets written to s.arr at the point of i. Printing the pointer to s.bottom and s.arr[i] shows us that they point to the same place in memory.
+    gdb command =>  list
+                    print &s.bottom
+                    print &s.arr[i]
+                    print i
+
+    We now know the fault happens exactly when s.arr[5] is written.

@@ -1,0 +1,3 @@
+I overwrite the standard << operator for a string (or char[]) and
+because there is another function for singular chars I can just feed the chars
+like that into the ostream and the output is adjusted.

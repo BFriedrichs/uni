@@ -1,10 +1,7 @@
-binary=strlength
+binary=bilinear
 
-all: main.o
-	gcc -std=c11 main.o -o $(binary)
-
-main.o: main.c
-	gcc -std=c11 -c main.c
+all: ../task01/main.c
+	gcc -D DO_RESIZE ../task01/main.c -ljpeg -o $(binary)
 
 clean:
-	rm *.o $(binary)
+	rm $(binary)

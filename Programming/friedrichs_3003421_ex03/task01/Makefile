@@ -1,9 +1,7 @@
 binary=imagecopy
-all: main.o
-	gcc -std=c11 -ljpeg main.o -o $(binary)
 
-main.o: main.c
-	gcc -std=c11 -c main.c
+all: main.c
+	gcc main.c -ljpeg -o $(binary)
 
 clean:
-	rm *.o $(binary)
+	rm $(binary)

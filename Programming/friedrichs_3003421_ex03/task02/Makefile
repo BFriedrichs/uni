@@ -1,10 +1,7 @@
-binary=cubes
+binary=imageresize
 
-all: main.o
-	gcc -std=c11 main.o -o $(binary)
-
-main.o: main.c
-	gcc -std=c11 -c main.c
+all: ../task01/main.c
+	gcc ../task01/main.c -D CHECK_RESIZE -ljpeg -o $(binary)
 
 clean:
-	rm *.o $(binary)
+	rm $(binary)

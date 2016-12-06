@@ -1,0 +1,124 @@
+To read this file properly, turn the dynamic word wrap on in your editor.
+
+Second assignment for System Programming 2015-2016
+
+There are two goals for this assignment: (i) understand how to use the keyboard (using the BIOS) and how to use variables in memory, at boot time, while training your skills at low-level programming and (ii) discover how to write code for the Linux kernel, reading scancodes from the keyboard in an interrupt handler (please note: Linux is the kernel itself, GNU/Linux the whole Linux-based Unix system, with the Linux kernel plus the multitude of GNU open-source utilities and applications).
+
+1) Boot time programming. You will write a program that takes user input from the keyboard and displays the typed key (scancode) on the screen.
+
+- start your Unix system (GNU-Linux, free BSD...).
+
+- download the archive with the tools and explanations: download assign2.zip from the moodle page and unzip it.
+
+- compile the given example and run it:
+
+./g mbr_key.asm
+qemu mbr_key.bin
+
+- Check the code and be ready to answer the following questions:
+  1) What does the program do to get the information about keypresses.
+  2) What type of information do you get?
+  3) Why is the ASCII code of a key not always matching what is actually printed on the key?
+
+- The scan code is saved in "mn_key". For now, this variable is not used. Modify the program
+  to display the scan code of the key at the beginning of the second line in hexadecimal.
+
+The algorithm for displaying a byte in hexadecimal is as follows:
+
+display the byte B:
+  1) shift B four bits to the right. If we assume the byte B to display is in the AL register, you could do:
+
+SHR(AL,IM8(4))
+
+  2) if the result is > 9, add the ASCII code of 'A', else add the ASCII code of '0'.
+     Be ready to explain why you have to make that test. To add the ASCII value of A, this would work:
+
+ADD(AL,IM8('A'-10))
+
+     To add the ASCII value of 0:
+
+ADD(AL,IM8('0'))
+
+Please note IM8('0') is the ASCII value of zero, which is 48. IM8(0) is the value zero (one minus one).
+
+  3) write the computed value in the video RAM.
+  4) reload B again and mask the four lower bits. Let's assume the byte B is in the AL register, you could write:
+
+AND( AL, IM8( 0b00001111 ) )
+
+That would keep only the four lowest significant bits of the byte you want to display.
+
+  5) do as in step (2).
+  6) write the computed value in the video RAM.
+
+Please make sure you understand how and why that algorithm works. For example, it would not work if the ASCII code for '1' would not be one more than the ASCII code of zero etc. Look at the ASCII code table to understand why the test is needed to tell if a digit is between 0 and 9, or between A and F (in hexadecimal).
+
+Comment your (working) implementation using ";".
+
+
+2) Linux kernel programming. In the spirit of Alice in Wonderland, you are going through hourglasses over and over again as a system programmer. Your new environment: the Linux kernel. What does it share with the previous task environment? Nothing, except maybe that it is as far from "standard" programming as possible.
+
+Most of the programming of the kernel is done in C, the language that is historically bound to Unix systems development. But unlike application programs that have access to the standard C library (and a multitude of other libraries), none of that here: only a specific set of kernel functions are available to you. Please refer to the documentation provided on the Moodle page.
+
+For this task, you have to create a kernel module that will associate an interrupt handler to the keyboard interrupt. Do not worry, you can add you handler while keeping the existing one working so that your system will still function more or less normally (of course if you screw up your only option will be to turn you machine off, that's why you are advised to use a virtual system for testing your module).
+
+The kernel programming context is different that the user application context in that:
+
+- its code is running in protected mode (not in standard or real mode such as during boot time) with highest priviledge: that means you can screw up everything with the system without your code being terminated, in the case of user code, any faulty access to a resource that is not "owned" by the user process is sanctioned by terminating the process, not so in kernel mode.
+
+- no standard library (libC etc) nor BIOS is available: no malloc/free, no printf etc. But you can use kernel provided support for kernel memory dynamic allocation, printing information to the kernel log etc.
+
+- complete new rules about sleeping, interrupts, threading etc.
+
+In the early days of GNU/Linux you had to recompile the whole kernel with your own additional code to enjoy kernel programming. Somewhere along the evolution of GNU/Linux, kernel modules could be loaded and unloaded dynamically.
+
+For simplicity, we will use:
+
+  insmod <our_module>
+
+to load the module and:
+
+  rmmod <our_module>
+
+to remove it from memory.
+
+Open the provided archive with the sample module. This sample code allows you to compile the module using:
+
+  make
+
+Once the module is compiled, you can use "insmod module_test.ko" to load it and "rmmod module_test.ko" to unload it. Use "dmesg" to print the current kernel log file and observe what happens each time you use a pair of insmod/rmmod commands. Have a look at the provided documentation and at "module_test.c" and make sure you understand what is going on, as your knowledge about it will be tested during the evaluation.
+
+Now, your next step is to add what is needed to react to a keyboard interrupt and to print in the kernel log the scan code currently present in the scancode register when the interrupt is triggered. Use a shared interrupt so that the other handler still works normally.
+
+To do this, you need to know the following:
+
+- in a standard (virtual) PC, the scancode of the last pressed key is stored at the IO address 60H (hexadecimal); this can be done like so in the kernel:
+
+  unsigned char scancode;
+...
+  scancode = inb(0x60); /* no fuss, even though there are more elegant but also intricate ways to do this... */
+
+- instead of 'printf', you can use 'printk' to output information to the kernel log file. Use 'printk' the way you would use 'printf'.
+
+- the interrupt handler has a specific form and has to be specified as such. Hints:     8)
+
+(i) static irqreturn_t my_interrupt(int irq, void *dev_id, struct pt_regs *regs)
+
+(ii) request_irq(...)
+
+(iii) Interrupt flag: IRQF_SHARED
+
+- do not forget the includes you need for interrupts and IO:
+
+#include <linux/interrupt.h>
+#include <asm/io.h>
+
+- do not forget to deactivate your handler when you remove the module.
+
+- your main reference: http://free-electrons.com/doc/books/ldd3.pdf
+
+That's it! Now you can write interrupt handlers and modules for the Linux kernel.
+
+Create a zip file with a top directory in it that has your name and two task directories inside that top directory.
+
+Good luck!

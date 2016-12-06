@@ -1,0 +1,3 @@
+
+a)
+  make produces a file called "boot.bin"

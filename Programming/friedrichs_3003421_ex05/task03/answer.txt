@@ -1,0 +1,6 @@
+ * My computer requires ~0.45 seconds to execute Copy assignment test 10000 times
+ * My computer requires ~0.15 seconds to execute Move assignment test 10000 times
+
+I can see quite a difference in computing time because the move commands are a lot faster.
+The reason for this behaviour is simple, a copy actually needs to allocate new
+memory on the heap while the move just switches pointers.
