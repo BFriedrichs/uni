@@ -1,6 +1,9 @@
 #include <iostream>
 #include "Game.hpp"
 
+/**
+ * Prints the menu to console
+ */
 void showMenu() {
   std::cout << "Choose your game mode." << std::endl;
   std::cout << "(1) Human vs. Human" << std::endl;
@@ -12,7 +15,11 @@ void showMenu() {
 bool exitProgram = false;
 char input;
 
-int main(int argc, char *argv[]) {
+/**
+ * Runs the program until it is ended by inputting 4
+ * Creates a new Game dependent on input
+ */
+int main() {
   while(!exitProgram) {
     showMenu();
     std::cin >> input;
@@ -34,12 +41,12 @@ int main(int argc, char *argv[]) {
         break;
     }
 
+    // reset everything
     if(currentGame != NULL) {
       currentGame->start();
       delete currentGame;
       currentGame = NULL;
     }
-
   }
   return 0;
 };

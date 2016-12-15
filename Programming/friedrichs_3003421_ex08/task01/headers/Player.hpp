@@ -1,13 +1,14 @@
-#include <iostream>
-#include "Board.hpp"
-
 #ifndef PLAYER_H
 #define PLAYER_H
+
+#include <iostream>
+#include "Board.hpp"
+#include "Coord.hpp"
 
 class Player {
   public:
     virtual void play(Board &board);
-    virtual int getInput(const char select[]);
+    virtual Coord getInput(const Board &board);
     char getSymbol() const { return symbol; }
 
   protected:

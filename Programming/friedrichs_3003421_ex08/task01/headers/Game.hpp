@@ -1,14 +1,13 @@
-#include <iostream>
-#include "Player.hpp"
-#include "Board.hpp"
-
 #ifndef GAME_H
 #define GAME_H
+
+#include "Player.hpp"
+#include "Board.hpp"
 
 class Game {
   public:
     enum GAME_TYPES {H_VS_H, H_VS_AI_MM, H_VS_AI_R};
-    Game(int gameType);
+    Game(const int gameType);
     ~Game();
     void start();
 
@@ -18,8 +17,6 @@ class Game {
     Player *player2;
     Board *board;
     void turn(const int playerNum);
-    bool checkWinner(const int currentPlayer) const;
-
 };
 
 #endif
