@@ -1,0 +1,9 @@
+
+FIX_A:
+  - Vector reallocates if its larger than it was before but the iterator stays at old position.
+  So we get the difference from beginning to insert position before we do the insert and then add it again after.
+
+  - Deque invalidates all iterators after an insert so we have to do the same thing to get our desired result.
+
+FIX_B:
+  - For all cases just take the returned iterator minus one to get to the position before the insert and proceed from there.

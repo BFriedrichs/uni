@@ -1,0 +1,85 @@
+Libusb-based driver development
+
+USB at a glance
+
+Most devices that can be connected to a personal computer nowadays have a USB (Universal Serial Bus) interface (see http://www.beyondlogic.org/usbnutshell/usb1.shtml for a quick overview). USB is based on a tree-like topology where one node only can be a host (or master) and the other USB devices are peripherals (or slaves), possibly connected through USB hubs to the master, a hub having N ports where a peripheral can be connected and one single port that is connected to the host. At any given time, one data packet (the bits of which are sent serially) can flow over this tree-like topology between the USB host and one specific end point (inside one of the peripherals). The addressing of the nodes is based on two numbers (a vendor ID and a product ID). The physical position of the peripheral does not have any impact at the logical (programming) level. When the peripheral is plugged, a hardware procedure identifies the peripheral to make it available to the higher levels.
+
+While USB is globally extremely complex (in part due to the different controller types, speeds and peripheral types available), the interaction between a host and a peripheral have been made easier thanks to the availability of specific libraries, one of which being Libusb. Libusb provides powerful abstractions through an API (Application Program Interface) that not only hides the intricacies of USB but also (in the case of GNU/Linux) the complexity of kernel development. The driver code can be completely written as a classical program running in user mode.
+
+Goal
+
+This assignment is about writing a test application that could later become a generic driver and a separate application using that driver. The code you will write will support a new device using the 'Libusb' library under GNU/Linux, mimmicking the typical task that a system programmer could be presented with today.
+
+
+Libusb
+
+The Libusb library can be downloaded from libusb.org where the code and documentation are available. Please read the documentation to become familiar with USB in general and Libusb programming in particular.
+
+For this assignment you will need to use the following functions:
+
+libusb_init()
+libusb_open_device_with_vid_pid()
+libusb_bulk_transfer()
+libusb_close()
+libusb_exit()
+
+
+The new device
+
+The USB device you will write a driver for has been developed in our group for teaching purposes. The device is designed to store user passwords that can be easily selected (using a 'previous' and a 'next' buttons) and sent to the connected host ('enter' button), through the USB interface. It is equipped with a 7x10 LED matrix to show the currently selected password. When used as described, the device is seen as an HID (Human Interface Device) by the host (a keyboard in this case).
+
+To be able to store new passwords or read out the password list, a specific device driver has to be present on the host side to interact with the device in a special way (the device behaves like two USB devices: a keyboard and the special device).
+
+The device has a "binary password" feature to prevent unauthorized people to use it. By default the password is all 'ones' or 'up' on the display. Press the upper key to have all the bits up (they are all down at startup) and press 'enter' (the button on the small side). You can then enter the configuration menu by pressing 'previous' and 'next' simultaneously. Then use the buttons to navigate through the options ('previous' and 'next' to select the option; 'enter' selects the current option; 'previous' and 'next' together to exit the configuration menu). That way you can reverse the display (two arrows), specify the binary password (key symbol) and generate random passwords ('G').
+
+The firmware on the device can handle USB packets using the following protocol (each packet description is followed by a sequence of bytes: for instance "Request PasswordList: 0x01" means that if the host wants to get a password list it has to send a USB packet where the first byte has the value 00000001 in binary):
+
+
+Host -> Device:
+
+Request PasswordList: 0x01
+Send Entry for given ID: 0x02, ID, flags+, LengthOfServiceName, LengthOfPassword, ServiceName*, Password* 
+
+Device -> Host:
+
+PasswordList: 0x81, Remaining Entries, ID, flags, LengthServiceName, LengthOfPassword, ServiceName*, Password*
+
+(*): multiple bytes.
+(+): flags is zero for now.
+
+The end points you will need to use are the following:
+
+From the host to the device, use end point 2. To get data out of the device, use end point 82h.
+
+Use synchronous transfers by default.
+
+Implement a command line executable that takes the following (optional) parameters:
+
+lockey [-s <ID> <password> ]
+
+Examples of use:
+
+lockey
+
+-> displays the passwords stored in the device in the following format:
+
+00: <password for ID 0>
+...
+19: <password for ID 19>
+
+lockey -s 2 1234567
+
+-> sets the password number 2 to "1234567" and prints the list of passwords (as above).
+
+If the syntax is wrong, your executable must display the usage information.
+
+Bonus tasks
+
+1) you will get extra points if you implement also a GUI that will use the executable above and will offer the possibility to set a password in a text field, set the ID and press a button to send the password to the device, while displaying in a window (possibly with horizontal or vertical scroll bars) the stored passwords.
+
+2) you will also get extra points if you implement the command line utility using asynchronous transfers (instead of synchronous).
+
+During the presentation you will demonstrate your application and driver and be asked questions about your implementation.
+
+Good luck.
+

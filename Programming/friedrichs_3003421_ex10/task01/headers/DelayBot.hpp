@@ -3,12 +3,10 @@
 
 #include "Bot.hpp"
 
-#include <vector>
-
 class DelayBot : public Bot {
 private:
   std::vector<std::thread> _threads;
-  void runDelay();
+  void runDelay(const std::string &currMessage);
 
 public:
   DelayBot(const std::string name, void (*cb)(const std::string &, Bot *pBot)) : Bot(name, cb) {}

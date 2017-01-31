@@ -5,6 +5,7 @@
 
 class CounterBot : public Bot {
 private:
+  std::vector<std::thread> _threads;
   void runTimer();
 
 public:

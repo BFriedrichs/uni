@@ -1,0 +1,11 @@
+I put the classes in seperate files "classes.cpp" and "classes.hpp" to make the code cleaner.
+I still used the guards (VERBOSE, TASK02, TASK03) to generate different executables with the Makefile.
+
+The instructions that use a direct call on the object opposed to a call from a pointer seem to finish quicker.
+I assume this is because of the extra step that is required to find the object at the pointer.
+
+Also because of the extra vtable lookup required virtual functions seem to generally need longer.
+
+
+Using dynamic_cast takes quite a bit longer than just a direct cast but it checks if the class youre casting
+to is a derivative of the parameter. So it sacrifices speed for robustness.

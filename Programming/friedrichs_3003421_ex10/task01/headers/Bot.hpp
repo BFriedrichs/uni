@@ -7,6 +7,9 @@
 #include <unistd.h>
 #include <thread>
 #include <list>
+#include <vector>
+#include <mutex>
+#include <exception>
 
 class Bot {
 private:
@@ -22,6 +25,7 @@ protected:
   void _printMessage(const std::string &message);
 
 public:
+  static std::mutex bot_mutex;
   virtual void readMessage() = 0;
   void addMessage(std::string message);
   void stop();
